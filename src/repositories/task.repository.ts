@@ -7,8 +7,20 @@ import { CreateTaskDto } from 'src/modules/tasks/dto/create-task.dto';
 export class TaskRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
-    return this.prisma.task.findMany();
+  //   findAll() {
+  //     return this.prisma.task.findMany();
+  //   }
+
+  async findAllPaginated(skip: number, take: number) {
+    const [items, total] = await Promise.all([
+      this.prisma.task.findMany({
+        skip,
+        take,
+      }),
+      this.prisma.task.count(),
+    ]);
+
+    return { items, total };
   }
 
   findByCode(code: string) {
