@@ -9,8 +9,30 @@ export class TaskService {
   //   return [{ id: 1, name: 'Flávio Montoril' }];
   // }
 
-  async findAll() {
-    return this.taskRepository.findAll();
+  // async findAll() {
+  //   return this.taskRepository.findAll();
+  // }
+
+  async findAllWithPagination(page: number = 1, limit: number = 10) {
+    page = Math.max(page, 1);
+    limit = Math.max(limit, 1);
+
+    const skip = (page - 1) * limit;
+
+    const { items, total } = await this.taskRepository.findAllPaginated(
+      skip,
+      limit,
+    );
+
+    return {
+      data: items,
+      meta: {
+        total,
+        page,
+        limit,
+        lastPage: Math.ceil(total / limit),
+      },
+    };
   }
 
   async create(data: CreateTaskDto) {
