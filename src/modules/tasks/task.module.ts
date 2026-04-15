@@ -8,6 +8,7 @@ import { TaskRepository } from 'src/repositories/task.repository';
   imports: [PrismaModule],
   controllers: [TasksController],
   providers: [TaskService, TaskRepository],
-  //   exports: [TaskService], Só exporta quando outro módulo precisa usar o UsersService. Ex: UserService
+  // Exporta "TaskService" apenas quando outro módulo precisa usar o service.
+  // exports: [TaskService],
 })
 export class TaskModule {}

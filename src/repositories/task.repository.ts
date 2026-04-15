@@ -7,32 +7,39 @@ import { CreateTaskDto } from 'src/modules/tasks/dto/create-task.dto';
 export class TaskRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  //   findAll() {
-  //     return this.prisma.task.findMany();
-  //   }
-
   async findAllPaginated(skip: number, take: number) {
-    const [items, total] = await Promise.all([
-      this.prisma.task.findMany({
-        skip,
-        take,
-      }),
-      this.prisma.task.count(),
-    ]);
-
-    return { items, total };
+    return await this.prisma.task.findMany({
+      skip,
+      take,
+    });
   }
 
-  findByCode(code: string) {
-    return this.prisma.task.findUnique({ where: { code } });
+  async findByCode(code: string) {
+    return await this.prisma.task.findUnique({ where: { code } });
   }
 
-  create(data: CreateTaskDto) {
-    return this.prisma.task.create({
+  async create(data: CreateTaskDto) {
+    return await this.prisma.task.create({
       data: {
         ...generateBaseEntity(),
         ...data,
       },
     });
+  }
+
+  async findById(id: string) {
+    return await this.prisma.task.findUnique({
+      where: { id },
+    });
+  }
+
+  async deleteTask(id: string) {
+    return await this.prisma.task.delete({
+      where: { id },
+    });
+  }
+
+  async countTasks() {
+    return await this.prisma.task.count();
   }
 }

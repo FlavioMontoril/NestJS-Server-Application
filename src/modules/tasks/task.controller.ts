@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { PaginationDto } from './dto/pagination-dto';
@@ -6,18 +15,32 @@ import { PaginationDto } from './dto/pagination-dto';
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TaskService) {}
+
   @Get()
-  // findAll() {
-  //   return this.tasksService.findAll();
-  // }
-  findAll(@Query() query: PaginationDto) {
-    const page = query.page ? Number(query.page) : 1;
-    const limit = query.limit ? Number(query.limit) : 10;
-    return this.tasksService.findAllWithPagination(Number(page), Number(limit));
+  @HttpCode(200)
+  async findAllTasksWithPagination(@Query() query: PaginationDto) {
+    return await this.tasksService.findAllWithPagination(
+      query.page,
+      query.limit,
+    );
+  }
+
+  @Get(':code')
+  @HttpCode(200)
+  async findByCode(@Param('code') code: string) {
+    return await this.tasksService.findByCode(code);
   }
 
   @Post()
-  create(@Body() data: CreateTaskDto) {
-    return this.tasksService.create(data);
+  @HttpCode(201)
+  async create(@Body() data: CreateTaskDto) {
+    await this.tasksService.create(data);
+    return { message: 'Task criada com sucesso' };
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async delete(@Param('id') id: string) {
+    await this.tasksService.deleteTask(id);
   }
 }
