@@ -9,8 +9,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { CreateTaskDto } from './dto/create-task.dto';
 import { PaginationDto } from './dto/pagination-dto';
+import { CreateTaskDto } from './dto/create-task.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -28,7 +28,8 @@ export class TasksController {
   @Get(':code')
   @HttpCode(200)
   async findByCode(@Param('code') code: string) {
-    return await this.tasksService.findByCode(code);
+    const task = await this.tasksService.findByCode(code);
+    return task.toJSON();
   }
 
   @Post()

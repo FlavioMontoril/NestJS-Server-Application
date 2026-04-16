@@ -40,4 +40,14 @@ export class Task {
   updateDescription(description?: string) {
     this.props.description = description;
   }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      code: this.code,
+      title: this.title,
+      description: this.description,
+      createdAt: this.createdAt,
+    };
+  }
 }
