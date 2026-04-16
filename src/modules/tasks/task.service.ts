@@ -3,8 +3,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { TaskRepository } from 'src/repositories/task.repository';
+import { TaskRepository } from 'src/modules/tasks/infra/prisma/task.repository';
+import { Task } from './domain/entities/task.entity';
+import { InputTask } from './dto/create-task.dto';
 
 @Injectable()
 export class TaskService {
@@ -31,7 +32,7 @@ export class TaskService {
     };
   }
 
-  async findByCode(code: string) {
+  async findByCode(code: string): Promise<Task> {
     const task = await this.taskRepository.findByCode(code);
 
     if (!task) {
@@ -51,18 +52,19 @@ export class TaskService {
     return task;
   }
 
-  async create(data: CreateTaskDto) {
+  async create(data: InputTask): Promise<void> {
     const exists = await this.taskRepository.findByCode(data?.code);
 
     if (exists) {
       throw new ConflictException('Já existe uma task com esse código');
     }
 
-    return this.taskRepository.create({
+    const task = new Task({
+      code: data.code,
       title: data.title,
       description: data.description,
-      code: data.code,
     });
+    await this.taskRepository.create(task);
   }
 
   async deleteTask(id: string) {
